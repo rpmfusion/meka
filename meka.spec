@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.73
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Sega 8-bit machine emulator
 
 Group: Applications/Emulators    
@@ -149,6 +149,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.73-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Sat Dec 11 2010 Andrea Musuruane <musuruan@gmail.com> 0.73-4
 - Fixed license
 
