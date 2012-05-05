@@ -1,39 +1,26 @@
-%define pkgdate 2010-05-30
+%define pkgdate 2012-05-03
 %define pkgversion %(echo %version|sed s/\\\\\.//g)
 
 Name: meka
-Version: 0.73
-Release: 4%{?dist}
+Version: 0.80
+Release: 0.1.20120503svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
-Group: Applications/Emulators    
 License: MEKA and non-commercial
 URL: http://www.smspower.org/meka/      
-Source0: http://www.smspower.org/meka/releases/%{name}-%{pkgdate}-srcs-v%{pkgversion}.zip
+# The source for this package was pulled from upstream's vcs.  Use the
+# following commands to generate the tarball:
+#  svn export -r 380 svn://svn.smspower.org/meka/branches/20110530-allegro5-sound meka-r380
+#  cd meka-r380/
+#  zip -ro ../meka-2012-05-03-srcs.zip *
+Source0: %{name}-%{pkgdate}-srcs.zip
 Source1: %{name}.sh
 Source2: %{name}.desktop
-Patch0: %{name}-0.72-rpmopt.patch
-Patch1: %{name}-0.72-buffer_overflow.patch
-# http://www.smspower.org/forums/viewtopic.php?t=12699
-Patch2: %{name}-0.73-execstack.patch
-# http://www.smspower.org/forums/viewtopic.php?t=10848
-# http://www.smspower.org/forums/viewtopic.php?t=12699
-Patch3: %{name}-0.73-noseal.patch
-# http://www.smspower.org/forums/viewtopic.php?t=12699
-Patch4: %{name}-0.73-gcc45.patch
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
-# This is package contains ix86 asm code
-ExclusiveArch: i686
-
-BuildRequires: allegro-devel
-BuildRequires: nasm
+BuildRequires: allegro5-devel
+BuildRequires: allegro5-addon-audio-devel
+BuildRequires: allegro5-addon-image-devel
 BuildRequires: libpng-devel
-BuildRequires: libXpm-devel
-BuildRequires: libXxf86dga-devel
-BuildRequires: libXxf86vm-devel
-BuildRequires: libXext-devel
 BuildRequires: ImageMagick
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
@@ -59,23 +46,11 @@ And if you are, I doubt you will want to play Nintendo games. So forget it.
 %prep
 %setup -q -c 
 
-# Fix CFLAGS in Makefilie
-%patch0 -p1
+# Fix source files
+mv srcs/z80marat/Z80DebugHelpers.cpp srcs/z80marat/Z80DebugHelpers.c
 
-# Fix buffer overflows
-%patch1 -p1
-
-# Patch not to require an executable stack
-%patch2 -p1
-
-# Patch not to require libseal (audio is severly broken)
-%patch3 -p1
-
-# Patch to compile with gcc 4.5
-%patch4 -p1
-
-# Remove pre-built lib files
-find -name '*.lib' -exec rm -f '{}' \;
+# Remove boundled libs
+rm -rf libs
 
 # Fix end-of-line-encoding
 sed -i 's/\r//' *.txt
@@ -89,8 +64,9 @@ done
 
 %build
 cd srcs
+export CFLAGS="%{optflags}"
 # make doesn't compile with %%{?_smp_mflags}
-make RPMFLAGS="%{optflags}"
+make
 
 
 %install
@@ -102,6 +78,10 @@ install -d %{buildroot}/%{_libexecdir}/meka
 install -m 755 meka %{buildroot}/%{_libexecdir}/meka
 install -d %{buildroot}/%{_datadir}/meka
 install -m 644 meka.{blt,dat,inp,msg,nam,pat,thm} %{buildroot}/%{_datadir}/meka
+install -d %{buildroot}/%{_datadir}/meka/datafiles
+install -m 644 datafiles/* %{buildroot}/%{_datadir}/meka/datafiles
+install -d %{buildroot}/%{_datadir}/meka/Themes
+install -m 644 Themes/* %{buildroot}/%{_datadir}/meka/Themes
 
 # install desktop file
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -115,10 +95,6 @@ convert -delete 1 srcs/mekaw.ico \
   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 convert -delete 0 srcs/mekaw.ico \
   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-
-
-%clean
-rm -rf %{buildroot}
 
 
 %post
@@ -137,18 +113,24 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/meka
 %{_libexecdir}/meka
 %{_datadir}/meka
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%doc changes.txt compat.txt debugger.txt history.txt mekanix.txt
-%doc meka.txt multi.txt sources.txt tech.txt TODO.txt
+%doc changes.txt compat.txt debugger.txt history.txt meka.txt multi.txt 
+%doc sources.txt tech.txt TODO.txt
 
 
 %changelog
+* Sat May 05 2012 Andrea Musuruane <musuruan@gmail.com> 0.80-0.1.20120503svn
+- Updated to an upstream preview of version 0.80
+- Minor clean up for rpm >= 4.9
+
+* Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.73-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Sat Dec 11 2010 Andrea Musuruane <musuruan@gmail.com> 0.73-4
 - Fixed license
 
@@ -167,4 +149,3 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Thu Jul 30 2009 Andrea Musuruane <musuruan@gmail.com> 0.73-0.1.20080619
 - First release
-
