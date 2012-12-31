@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.80
-Release: 0.1.20120503svn%{?dist}
+Release: 0.2.20120503svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
 License: MEKA and non-commercial
@@ -16,6 +16,9 @@ URL: http://www.smspower.org/meka/
 Source0: %{name}-%{pkgdate}-srcs.zip
 Source1: %{name}.sh
 Source2: %{name}.desktop
+
+# This is package contains ix86 asm code
+ExclusiveArch: i686 x86_64
 
 BuildRequires: allegro5-devel
 BuildRequires: allegro5-addon-audio-devel
@@ -124,6 +127,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Mon Dec 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.80-0.2.20120503svn
+- Fixed supported archs (BZ #2611)
+
 * Sat May 05 2012 Andrea Musuruane <musuruan@gmail.com> 0.80-0.1.20120503svn
 - Updated to an upstream preview of version 0.80
 - Minor clean up for rpm >= 4.9
