@@ -1,21 +1,23 @@
-%define pkgdate 2012-05-03
-%define pkgversion %(echo %version|sed s/\\\\\.//g)
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+%global pkgdate 2013-07-25
 
 Name: meka
 Version: 0.80
-Release: 0.2.20120503svn%{?dist}
+Release: 0.3.20130725svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
 License: MEKA and non-commercial
 URL: http://www.smspower.org/meka/      
 # The source for this package was pulled from upstream's vcs.  Use the
 # following commands to generate the tarball:
-#  svn export -r 380 svn://svn.smspower.org/meka/branches/20110530-allegro5-sound meka-r380
-#  cd meka-r380/
-#  zip -ro ../meka-2012-05-03-srcs.zip *
+#  svn export -r 435 svn://svn.smspower.org/meka/trunk/meka meka-r435
+#  cd meka-r435/
+#  zip -ro ../meka-2013-07-25-srcs.zip *
 Source0: %{name}-%{pkgdate}-srcs.zip
 Source1: %{name}.sh
 Source2: %{name}.desktop
+# Fix pointer cast
+Patch0: %{name}-0.80-pointer.patch
 
 # This is package contains ix86 asm code
 ExclusiveArch: i686 x86_64
@@ -48,9 +50,7 @@ And if you are, I doubt you will want to play Nintendo games. So forget it.
 
 %prep
 %setup -q -c 
-
-# Fix source files
-mv srcs/z80marat/Z80DebugHelpers.cpp srcs/z80marat/Z80DebugHelpers.c
+%patch0 -p1
 
 # Remove boundled libs
 rm -rf libs
@@ -63,6 +63,13 @@ for i in *.txt; do
   iconv --from=ISO-8859-1 --to=UTF-8 $i > $i.utf8
   mv $i.utf8 $i
 done
+
+# Use unversioned docdir
+sed -i 's!/usr/share/doc/$GAME-$VERSION!%{_pkgdocdir}!' %{SOURCE1}
+
+# Compile for unix
+sed -i 's/SYSTEM = macosx/# SYSTEM = macosx/' srcs/Makefile
+sed -i 's/# SYSTEM = unix/SYSTEM = unix/' srcs/Makefile
 
 
 %build
@@ -127,6 +134,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Aug 18 2013 Andrea Musuruane <musuruan@gmail.com> 0.80-0.3.20130725svn
+- Updated to a new upstream preview of version 0.80
+- Fixed startup script
+- Used unversioned docdir
+
 * Mon Dec 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.80-0.2.20120503svn
 - Fixed supported archs (BZ #2611)
 
