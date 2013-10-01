@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.80
-Release: 0.4.20130725svn%{?dist}
+Release: 0.5.20130725svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
 License: MEKA and non-commercial
@@ -134,6 +134,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Tue Oct 01 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.80-0.5.20130725svn
+- Rebuilt
+
 * Mon Sep 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.80-0.4.20130725svn
 - Rebuilt
 
