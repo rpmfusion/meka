@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.80
-Release: 0.5.20130725svn%{?dist}
+Release: 0.6.20130725svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
 License: MEKA and non-commercial
@@ -134,6 +134,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.80-0.6.20130725svn
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Tue Oct 01 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.80-0.5.20130725svn
 - Rebuilt
 
