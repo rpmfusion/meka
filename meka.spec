@@ -1,23 +1,22 @@
-%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
-%global pkgdate 2013-07-25
+%global pkgdate 2014-10-05
 
 Name: meka
 Version: 0.80
-Release: 0.3.20130725svn%{?dist}
+Release: 0.7.20141005svn%{?dist}
 Summary: Sega 8-bit machine emulator
 
 License: MEKA and non-commercial
 URL: http://www.smspower.org/meka/      
 # The source for this package was pulled from upstream's vcs.  Use the
 # following commands to generate the tarball:
-#  svn export -r 435 svn://svn.smspower.org/meka/trunk/meka meka-r435
-#  cd meka-r435/
-#  zip -ro ../meka-2013-07-25-srcs.zip *
+#  svn export -r 496 svn://svn.smspower.org/meka/trunk/meka meka-r496
+#  cd meka-r496/
+#  zip -ro ../meka-2014-10-05-srcs.zip *
 Source0: %{name}-%{pkgdate}-srcs.zip
 Source1: %{name}.sh
 Source2: %{name}.desktop
-# Fix pointer cast
-Patch0: %{name}-0.80-pointer.patch
+# Fix format strings
+Patch0: %{name}-0.80-format-strings.patch
 
 # This is package contains ix86 asm code
 ExclusiveArch: i686 x86_64
@@ -49,7 +48,7 @@ You can play other systems on it only if you are smart enough to figure how.
 And if you are, I doubt you will want to play Nintendo games. So forget it.
 
 %prep
-%setup -q -c 
+%setup -q -c
 %patch0 -p1
 
 # Remove boundled libs
@@ -64,9 +63,6 @@ for i in *.txt; do
   mv $i.utf8 $i
 done
 
-# Use unversioned docdir
-sed -i 's!/usr/share/doc/$GAME-$VERSION!%{_pkgdocdir}!' %{SOURCE1}
-
 # Compile for unix
 sed -i 's/SYSTEM = macosx/# SYSTEM = macosx/' srcs/Makefile
 sed -i 's/# SYSTEM = unix/SYSTEM = unix/' srcs/Makefile
@@ -80,8 +76,6 @@ make
 
 
 %install
-rm -rf %{buildroot}
-
 install -d %{buildroot}/%{_bindir}
 install -m 755 %{SOURCE1} %{buildroot}/%{_bindir}/meka
 install -d %{buildroot}/%{_libexecdir}/meka
@@ -134,6 +128,21 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Oct 05 2014 Andrea Musuruane <musuruan@gmail.com> - 0.80-0.7.20141005svn
+- Updated to a new upstream preview of version 0.80
+- Made a patch to fix format strings
+- Dropped cleaning at the beginning of %%install
+- Spec file clean up
+
+* Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.80-0.6.20130725svn
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Tue Oct 01 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.80-0.5.20130725svn
+- Rebuilt
+
+* Mon Sep 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.80-0.4.20130725svn
+- Rebuilt
+
 * Sun Aug 18 2013 Andrea Musuruane <musuruan@gmail.com> 0.80-0.3.20130725svn
 - Updated to a new upstream preview of version 0.80
 - Fixed startup script
