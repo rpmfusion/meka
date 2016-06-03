@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Meka
-Comment=Multi machine emulator for MS-DOS, MS-Windows and GNU/Linux
+Comment=Sega 8-bit emulator with debugging/hacking tools
 Exec=meka
 Icon=meka
 Terminal=true
