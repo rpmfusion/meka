@@ -4,7 +4,7 @@ VERSION=0.80
 GAME_LOCALDIR=$HOME/.$GAME
 GAME_DATADIR=/usr/share/$GAME
 GAME_EXECUTABLE=/usr/libexec/$GAME/$GAME
-GAME_DOCDIR=/usr/share/doc/$GAME-$VERSION
+GAME_DOCDIR=/usr/share/doc/$GAME
 
 mkdir -p $GAME_LOCALDIR
 cd $GAME_LOCALDIR
@@ -18,9 +18,12 @@ for file in meka.{blt,dat,msg,nam,pat,thm}; do
 done
 
 # Create links to directory which are not (usually) modified by users
-for dir in {datafiles,Themes}; do
-        ln -sf $GAME_DATADIR/$dir $dir
+for dir in {Data,Themes}; do
+        ln -nsf $GAME_DATADIR/$dir $dir
 done
+
+# Remove old link
+rm -rf $GAME_LOCALDIR/datafiles
 
 # Copy files which can be modified by users
 for file in meka.inp; do

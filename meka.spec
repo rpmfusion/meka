@@ -1,22 +1,16 @@
-%global pkgdate 2014-10-05
+%global commit f55fcdd96f1ad43f01d2645f4cd7fe0b9c5c6870
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name: meka
 Version: 0.80
-Release: 0.7.20141005svn%{?dist}
-Summary: Sega 8-bit machine emulator
+Release: 0.8.20150506git%{?dist}
+Summary: Sega 8-bit emulator with debugging/hacking tools
 
 License: MEKA and non-commercial
 URL: http://www.smspower.org/meka/      
-# The source for this package was pulled from upstream's vcs.  Use the
-# following commands to generate the tarball:
-#  svn export -r 496 svn://svn.smspower.org/meka/trunk/meka meka-r496
-#  cd meka-r496/
-#  zip -ro ../meka-2014-10-05-srcs.zip *
-Source0: %{name}-%{pkgdate}-srcs.zip
+Source0: https://github.com/ocornut/%{name}/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 Source1: %{name}.sh
 Source2: %{name}.desktop
-# Fix format strings
-Patch0: %{name}-0.80-format-strings.patch
 
 # This is package contains ix86 asm code
 ExclusiveArch: i686 x86_64
@@ -24,10 +18,12 @@ ExclusiveArch: i686 x86_64
 BuildRequires: allegro5-devel
 BuildRequires: allegro5-addon-audio-devel
 BuildRequires: allegro5-addon-image-devel
+BuildRequires: allegro5-addon-ttf-devel
 BuildRequires: libpng-devel
 BuildRequires: ImageMagick
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
+Requires: grimmer-proggy-tinysz-fonts
 
 %description
 MEKA is a multi machine emulator, originally started as a Sega Master System
@@ -48,8 +44,7 @@ You can play other systems on it only if you are smart enough to figure how.
 And if you are, I doubt you will want to play Nintendo games. So forget it.
 
 %prep
-%setup -q -c
-%patch0 -p1
+%setup -q -n %{name}-%{commit}/%{name}
 
 # Remove boundled libs
 rm -rf libs
@@ -62,6 +57,13 @@ for i in *.txt; do
   iconv --from=ISO-8859-1 --to=UTF-8 $i > $i.utf8
   mv $i.utf8 $i
 done
+
+# Fix linking
+sed -i 's/allegro_primitives-5.0`/allegro_primitives-5.0 allegro_ttf-5.0`/' srcs/Makefile
+
+# Fix linking with allegro5
+sed -i 's/pkg-config --cflags --libs allegro-5.0 allegro_image-5.0 allegro_audio-5.0 allegro_font-5.0 allegro_primitives-5.0 allegro_ttf-5.0/pkg-config --cflags --libs allegro-5 allegro_image-5 allegro_audio-5 allegro_font-5 allegro_primitives-5 allegro_ttf-5/' srcs/Makefile
+
 
 # Compile for unix
 sed -i 's/SYSTEM = macosx/# SYSTEM = macosx/' srcs/Makefile
@@ -82,10 +84,7 @@ install -d %{buildroot}/%{_libexecdir}/meka
 install -m 755 meka %{buildroot}/%{_libexecdir}/meka
 install -d %{buildroot}/%{_datadir}/meka
 install -m 644 meka.{blt,dat,inp,msg,nam,pat,thm} %{buildroot}/%{_datadir}/meka
-install -d %{buildroot}/%{_datadir}/meka/datafiles
-install -m 644 datafiles/* %{buildroot}/%{_datadir}/meka/datafiles
-install -d %{buildroot}/%{_datadir}/meka/Themes
-install -m 644 Themes/* %{buildroot}/%{_datadir}/meka/Themes
+cp -aR {Data,Themes} %{buildroot}/%{_datadir}/meka
 
 # install desktop file
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -99,6 +98,11 @@ convert -delete 1 srcs/mekaw.ico \
   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 convert -delete 0 srcs/mekaw.ico \
   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+
+# symlink system fonts
+rm %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggyTinySZ.ttf
+ln -s %{_datadir}/fonts/grimmer-proggy-tinysz/ProggyTinySZ.ttf \
+    %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggyTinySZ.ttf
 
 
 %post
@@ -123,11 +127,15 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%doc changes.txt compat.txt debugger.txt history.txt meka.txt multi.txt 
+%doc changes.txt compat.txt debugger.txt history.txt meka.txt multi.txt
 %doc sources.txt tech.txt TODO.txt
 
 
 %changelog
+* Thu Jun 02 2016 Andrea Musuruane <musuruan@gmail.com> - 0.80-0.8.20150506git
+- Updated to a new upstream preview of version 0.80
+- Using new upstream repository
+
 * Sun Oct 05 2014 Andrea Musuruane <musuruan@gmail.com> - 0.80-0.7.20141005svn
 - Updated to a new upstream preview of version 0.80
 - Made a patch to fix format strings
