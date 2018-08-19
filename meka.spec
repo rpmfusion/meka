@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.80
-Release: 0.12.20150506git%{?dist}
+Release: 0.13.20150506git%{?dist}
 Summary: Sega 8-bit emulator with debugging/hacking tools
 
 License: MEKA and non-commercial
@@ -132,6 +132,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Aug 19 2018 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.80-0.13.20150506git
+- Rebuilt for Fedora 29 Mass Rebuild binutils issue
+
 * Fri Jul 27 2018 RPM Fusion Release Engineering <sergio@serjux.com> - 0.80-0.12.20150506git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
