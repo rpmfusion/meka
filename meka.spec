@@ -15,6 +15,7 @@ Source2: %{name}.desktop
 # This is package contains ix86 asm code
 ExclusiveArch: i686 x86_64
 
+BuildRequires: gcc-c++
 BuildRequires: allegro5-devel
 BuildRequires: allegro5-addon-audio-devel
 BuildRequires: allegro5-addon-image-devel
