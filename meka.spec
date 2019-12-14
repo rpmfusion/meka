@@ -1,9 +1,9 @@
-%global commit f55fcdd96f1ad43f01d2645f4cd7fe0b9c5c6870
+%global commit 9a40240c5ce3ac800aab83cb49f7f6dd00619b38
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name: meka
 Version: 0.80
-Release: 0.15.20150506git%{?dist}
+Release: 0.16.20191213git%{?dist}
 Summary: Sega 8-bit emulator with debugging/hacking tools
 
 License: MEKA and non-commercial
@@ -25,6 +25,7 @@ BuildRequires: ImageMagick
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
 Requires: grimmer-proggy-tinysz-fonts
+Requires: grimmer-proggy-squaresz-fonts
 
 %description
 MEKA is a multi machine emulator, originally started as a Sega Master System
@@ -47,9 +48,6 @@ And if you are, I doubt you will want to play Nintendo games. So forget it.
 %prep
 %setup -q -n %{name}-%{commit}/%{name}
 
-# Remove boundled libs
-rm -rf libs
-
 # Fix end-of-line-encoding
 sed -i 's/\r//' *.txt
 
@@ -59,23 +57,14 @@ for i in *.txt; do
   mv $i.utf8 $i
 done
 
-# Fix linking
-sed -i 's/allegro_primitives-5.0`/allegro_primitives-5.0 allegro_ttf-5.0`/' srcs/Makefile
-
 # Fix linking with allegro5
 sed -i 's/pkg-config --cflags --libs allegro-5.0 allegro_image-5.0 allegro_audio-5.0 allegro_font-5.0 allegro_primitives-5.0 allegro_ttf-5.0/pkg-config --cflags --libs allegro-5 allegro_image-5 allegro_audio-5 allegro_font-5 allegro_primitives-5 allegro_ttf-5/' srcs/Makefile
 
 
-# Compile for unix
-sed -i 's/SYSTEM = macosx/# SYSTEM = macosx/' srcs/Makefile
-sed -i 's/# SYSTEM = unix/SYSTEM = unix/' srcs/Makefile
-
-
 %build
 cd srcs
-export CFLAGS="%{optflags}"
-# make doesn't compile with %%{?_smp_mflags}
-make
+%set_build_flags
+%make_build
 
 
 %install
@@ -105,20 +94,9 @@ rm %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggyTinySZ.ttf
 ln -s %{_datadir}/fonts/grimmer-proggy-tinysz/ProggyTinySZ.ttf \
     %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggyTinySZ.ttf
 
-
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+rm %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggySquareSZ.ttf
+ln -s %{_datadir}/fonts/grimmer-proggy-squaresz/ProggySquareSZ.ttf \
+    %{buildroot}%{_datadir}/%{name}/Data/fonts/ProggySquareSZ.ttf
 
 
 %files
@@ -133,6 +111,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Dec 14 2019 Andrea Musuruane <musuruan@gmail.com> - 0.80-0.16.20191213git
+- Updated to a new upstream preview of version 0.80
+- Spec file clean up
+
 * Sat Aug 10 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.80-0.15.20150506git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
