@@ -64,7 +64,8 @@ sed -i 's/pkg-config --cflags --libs allegro-5.0 allegro_image-5.0 allegro_audio
 %build
 cd srcs
 %set_build_flags
-%make_build
+# make doesn't compile with %%{?_smp_mflags}
+make
 
 
 %install
