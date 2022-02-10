@@ -3,7 +3,7 @@
 
 Name: meka
 Version: 0.80
-Release: 0.20.20191213git%{?dist}
+Release: 0.21.20191213git%{?dist}
 Summary: Sega 8-bit emulator with debugging/hacking tools
 
 License: MEKA and non-commercial
@@ -112,6 +112,9 @@ ln -s %{_datadir}/fonts/grimmer-proggy-squaresz/ProggySquareSZ.ttf \
 
 
 %changelog
+* Thu Feb 10 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.80-0.21.20191213git
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Wed Aug 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.80-0.20.20191213git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
