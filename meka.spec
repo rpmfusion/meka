@@ -1,9 +1,9 @@
-%global commit 9a40240c5ce3ac800aab83cb49f7f6dd00619b38
+%global commit e6a889241f9f5b415ff954e50760f550d2e07f58
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name: meka
 Version: 0.80
-Release: 0.28.20191213git%{?dist}
+Release: 0.29.20250817git%{?dist}
 Summary: Sega 8-bit emulator with debugging/hacking tools
 
 License: MEKA and non-commercial
@@ -11,6 +11,9 @@ URL: http://www.smspower.org/meka/
 Source0: https://github.com/ocornut/%{name}/archive/%{commit}/%{name}-%{version}-%{shortcommit}.tar.gz
 Source1: %{name}.sh
 Source2: %{name}.desktop
+# Fix compilation under Linux
+# https://github.com/ocornut/meka/commit/8c66287600aecc82a9ff897d497ca2d0ae864069
+Patch0: %{name}-0.80-linux.patch
 
 # This is package contains ix86 asm code
 ExclusiveArch: i686 x86_64
@@ -47,6 +50,10 @@ And if you are, I doubt you will want to play Nintendo games. So forget it.
 
 %prep
 %setup -q -n %{name}-%{commit}/%{name}
+%patch 0 -p2
+
+# Honor LDFLAGS
+sed -i 's/$(LINKER) -o $@ $(OBJ_MEKA) $(LIB)/$(LINKER) -o $@ $(OBJ_MEKA) $(LIB) $(LDFLAGS)/' srcs/Makefile
 
 # Fix end-of-line-encoding
 sed -i 's/\r//' *.txt
@@ -56,9 +63,6 @@ for i in *.txt; do
   iconv --from=ISO-8859-1 --to=UTF-8 $i > $i.utf8
   mv $i.utf8 $i
 done
-
-# Fix linking with allegro5
-sed -i 's/pkg-config --cflags --libs allegro-5.0 allegro_image-5.0 allegro_audio-5.0 allegro_font-5.0 allegro_primitives-5.0 allegro_ttf-5.0/pkg-config --cflags --libs allegro-5 allegro_image-5 allegro_audio-5 allegro_font-5 allegro_primitives-5 allegro_ttf-5/' srcs/Makefile
 
 
 %build
@@ -112,6 +116,9 @@ ln -s %{_datadir}/fonts/grimmer-proggy-squaresz/ProggySquareSZ.ttf \
 
 
 %changelog
+* Mon Feb 23 2026 Andrea Musuruane <musuruan@gmail.com> - 0.80-0.29.20250817git
+- Updated to a new upstream preview of version 0.80
+
 * Mon Feb 02 2026 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.80-0.28.20191213git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_44_Mass_Rebuild
 
